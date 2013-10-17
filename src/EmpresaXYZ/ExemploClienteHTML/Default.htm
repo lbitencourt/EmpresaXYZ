@@ -1,0 +1,82 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head lang="pt-br">
+    <meta charset="utf-8" />
+    <title>Cliente HTML Puro</title>
+    <script type="text/javascript" src="Scripts/jquery-2.0.3.min.js"></script>
+    <script type="text/javascript" src="Scripts/jquery.jqGrid.min.js"></script>
+    <script type="text/javascript" src="Scripts/jquery-ui-1.10.3.min.js"></script>
+    <script type="text/javascript" src="Scripts/i18n/grid.locale-pt-br.js"></script>
+    <link rel="Stylesheet" type="text/css" media="all" href="Content/themes/base/jquery-ui.css" />
+    <link rel="Stylesheet" type="text/css" media="all" href="Content/themes/sunny/jquery-ui-1.10.3.custom.min.css" />
+    <link rel="Stylesheet" type="text/css" media="all" href="Content/jquery.jqGrid/ui.jqgrid.css" />
+</head>
+<body>
+    <table id="list19">
+    </table>
+    <div id="pager1">
+    </div>
+    <script type="text/javascript">
+        $(function () {
+            var grid = $("#list19");
+
+            grid.jqGrid({
+                url: 'http://localhost:36871/ClienteService.svc/Clientes',
+                datatype: "xml",
+                colNames: ['', "Nome", "Telefone", "Endereço", "Nascimento", "Celular"],
+                colModel:
+                    [
+                        { name: "Id", index: "Id", editable: true, hidden: true },
+                        { name: "Nome", index: "Nome", editable: true, editoptions: { readonly: true, size: 40} },
+   		                { name: "TelefoneResidencial", index: "TelefoneResidencial", editable: true, editoptions: { readonly: true, size: 20} },
+   		                { name: "Endereco", index: "Endereco", editable: true, editoptions: { readonly: true, size: 40} },
+   		                { name: "DataNascimento", index: "DataNascimento", editable: true, editoptions: { size: 10} },
+   		                { name: "NumeroCelular", index: "NumeroCelular", editable: true, editoptions: { size: 10} }
+                    ],
+                height: 250,
+                viewrecords: true,
+                pager: $('#pager1'),
+                rowNum: 25,
+                rowList: [25, 50, 100],
+                autowidth: true,
+
+                xmlReader: {
+                    root: "ArrayOfConsultaClienteResponse",
+                    row: "ConsultaClienteResponse",
+                    repeatitems: false
+                },
+                caption: "Clientes",
+                editurl: 'http://localhost:36871/ClienteService.svc/Atualizar'
+            });
+
+            grid.navGrid('#pager1', { add: false, del: false }, {
+
+                ajaxEditOptions: { contentType: 'application/xml', dataType: 'xml' },
+                closeAfterEdit: true,
+                serializeEditData: function (obj) {
+                    var xml = '';
+
+                    xml += '<Cliente xmlns="http://schemas.datacontract.org/2004/07/EmpresaXYZ.WebService.Request">';
+                    xml += '<DataNascimento>' + obj.DataNascimento + '</DataNascimento>';
+                    xml += '<Id>' + obj.Id + '</Id>';
+                    xml += '<NumeroCelular>' + obj.NumeroCelular + '</NumeroCelular>';
+                    xml += '</Cliente>';
+
+                    return xml;
+                },
+                afterSubmit: function (response) {
+                    var xml = $.parseXML(response.responseText);
+                    var status = $(xml).find('Status').text();
+                    var message = $(xml).find('Message').text();
+                    if (status == 'ERROR') {
+                        return [false, message, ''];
+                    }
+
+                    return [true, '', ''];
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>
