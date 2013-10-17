@@ -1,4 +1,4 @@
 EmpresaXYZ
 ==========
 
-Exemplo de Service WCF REST XML + Consumo usango JQuey + JQuery Grid
+Exemplo de aplicação em .Net utilzando WCF, REST, IoC Windsor, JQuery, JQuery Grid, JQuery UI, TDD e DDD.
